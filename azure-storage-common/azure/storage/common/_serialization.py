@@ -35,6 +35,7 @@ from ._common_conversion import (
     _str,
 )
 from ._constants import _CLIENT_REQUEST_ID_HEADER_NAME
+import json
 
 
 def _to_utc_datetime(value):
@@ -96,6 +97,13 @@ def _get_data_bytes_only(param_name, param_value):
 
     if isinstance(param_value, bytes):
         return param_value
+
+    try: # to check it is a json string
+        # if bytes are a string and a valid json string (super_csv sends it as a json string)
+        if isinstance(param_value, str) and json.loads(param_value):
+            return bytes(param_value, 'utf-8')
+    except ValueError: # throws an error if json.loads fails
+        raise TypeError(_ERROR_VALUE_SHOULD_BE_BYTES.format(param_name))
 
     raise TypeError(_ERROR_VALUE_SHOULD_BE_BYTES.format(param_name))
 
