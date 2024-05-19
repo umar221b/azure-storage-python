@@ -98,12 +98,9 @@ def _get_data_bytes_only(param_name, param_value):
     if isinstance(param_value, bytes):
         return param_value
 
-    try: # to check it is a json string
-        # if bytes are a string and a valid json string (super_csv sends it as a json string)
-        if isinstance(param_value, str) and json.loads(param_value):
-            return bytes(param_value, 'utf-8')
-    except ValueError: # throws an error if json.loads fails
-        raise TypeError(_ERROR_VALUE_SHOULD_BE_BYTES.format(param_name))
+    # if bytes are a string convert it to bytes (super_csv sends it as a json string)
+    if isinstance(param_value, str):
+        return bytes(param_value, 'utf-8')
 
     raise TypeError(_ERROR_VALUE_SHOULD_BE_BYTES.format(param_name))
 
